@@ -1,0 +1,50 @@
+WITH C AS (
+    SELECT COUNT(ID) AS C
+    FROM ECOLI_DATA
+)
+SELECT
+    ID,
+    CASE
+        WHEN (ROW_NUMBER() OVER w << 2) <= C.C
+            THEN "CRITICAL"
+        WHEN (ROW_NUMBER() OVER w << 1) <= C.C
+            THEN "HIGH"
+        WHEN (ROW_NUMBER() OVER w << 2) <= 3 * C.C
+            THEN "MEDIUM"
+        ELSE "LOW"
+    END AS COLONY_NAME
+FROM ECOLI_DATA
+JOIN C
+ON TRUE
+WINDOW w AS (ORDER BY SIZE_OF_COLONY DESC)
+ORDER BY ID ASC;
+
+SELECT
+    ID,
+    CASE
+        WHEN (ROW_NUMBER() OVER w << 2) <= COUNT(ID) OVER()
+            THEN "CRITICAL"
+        WHEN (ROW_NUMBER() OVER w << 1) <= COUNT(ID) OVER()
+            THEN "HIGH"
+        WHEN (ROW_NUMBER() OVER w << 2) <= 3 * COUNT(ID) OVER()
+            THEN "MEDIUM"
+        ELSE "LOW"
+    END AS COLONY_NAME
+FROM ECOLI_DATA
+WINDOW w AS (ORDER BY SIZE_OF_COLONY DESC)
+ORDER BY ID ASC;
+
+SELECT
+    ID,
+    CASE NTILE(4) OVER w
+        WHEN 1
+            THEN "CRITICAL"
+        WHEN 2
+            THEN "HIGH"
+        WHEN 3
+            THEN "MEDIUM"
+        ELSE "LOW"
+    END AS COLONY_NAME
+FROM ECOLI_DATA
+WINDOW w AS (ORDER BY SIZE_OF_COLONY DESC)
+ORDER BY ID ASC;
