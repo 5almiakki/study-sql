@@ -1,0 +1,26 @@
+SELECT
+    HR_EMPLOYEES.EMP_NO AS EMP_NO,
+    EMP_NAME,
+    CASE
+        WHEN AVG(SCORE) < 80
+            THEN 'C'
+        WHEN AVG(SCORE) < 90
+            THEN 'B'
+        WHEN AVG(SCORE) < 96
+            THEN 'A'
+        ELSE 'S'
+    END AS GRADE,
+    CASE
+        WHEN AVG(SCORE) < 80
+            THEN 0
+        WHEN AVG(SCORE) < 90
+            THEN SAL DIV 10
+        WHEN AVG(SCORE) < 96
+            THEN SAL * 3 DIV 20
+        ELSE SAL / 5
+    END AS BONUS
+FROM HR_EMPLOYEES
+JOIN HR_GRADE
+ON HR_EMPLOYEES.EMP_NO = HR_GRADE.EMP_NO
+GROUP BY HR_EMPLOYEES.EMP_NO
+ORDER BY HR_EMPLOYEES.EMP_NO ASC;
